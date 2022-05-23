@@ -59,7 +59,7 @@ class _StoreDetailPageState extends State<StoreDetailPage> {
                   height: 150,
                   decoration: BoxDecoration(
                       image: DecorationImage(
-                          image: NetworkImage(widget.img), fit: BoxFit.cover)),
+                          image: AssetImage(widget.img), fit: BoxFit.cover)),
                 ),
                 SafeArea(
                   child: Row(

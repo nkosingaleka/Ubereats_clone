@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:geocoder/geocoder.dart';
 import 'package:grab_eat_ui/json/home_page_json.dart';
 import 'package:grab_eat_ui/pages/store_detail_page.dart';
 import 'package:grab_eat_ui/theme/colors.dart';
 import 'package:grab_eat_ui/theme/styles.dart';
 import 'package:grab_eat_ui/widgets/custom_slider.dart';
 import 'package:animate_do/animate_do.dart';
+import 'package:location/location.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -15,6 +19,60 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   int activeMenu = 0;
+  String key_UsersAddress = "";
+
+  @override
+  void initState() {
+    super.initState();
+    getAddressLocation();
+  }
+
+  Future<Null> getAddressLocation() async {
+    Location location = new Location();
+
+    bool _serviceEnabled;
+    PermissionStatus _permissionGranted;
+    LocationData _locationData;
+
+    _serviceEnabled = await location.serviceEnabled();
+    if (!_serviceEnabled) {
+      _serviceEnabled = await location.requestService();
+      if (!_serviceEnabled) {
+        return;
+      }
+    }
+
+    _permissionGranted = await location.hasPermission();
+    if (_permissionGranted == PermissionStatus.denied) {
+      _permissionGranted = await location.requestPermission();
+      if (_permissionGranted != PermissionStatus.granted) {
+        return;
+      }
+    }
+
+    _locationData = await location.getLocation();
+    location.enableBackgroundMode(enable: true);
+
+    Future<String> locAddr =
+        _getLocation(_locationData.latitude, _locationData.longitude);
+  }
+
+  Future<String> _getLocation(double latitude, double longitude) async {
+    final coordinates = new Coordinates(latitude, longitude);
+    var addresses =
+        await Geocoder.local.findAddressesFromCoordinates(coordinates);
+    var first = addresses.first;
+    print("${first.featureName} : ${first.addressLine}");
+
+    try {
+      setState(() {
+        key_UsersAddress = "${first.addressLine}";
+      });
+    } catch (Exception) {}
+
+    return "${first.addressLine}";
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -26,6 +84,7 @@ class _HomePageState extends State<HomePage> {
   Widget getBody() {
     var size = MediaQuery.of(context).size;
     return ListView(
+      shrinkWrap: true,
       children: [
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -101,62 +160,12 @@ class _HomePageState extends State<HomePage> {
                   ),
                   height: 45,
                   width: size.width - 70,
-                  decoration: BoxDecoration(
-                      color: textFieldColor,
-                      borderRadius: BorderRadius.circular(30)),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(12.0),
-                        child: Row(
-                          children: [
-                            SvgPicture.asset(
-                              "assets/images/pin_icon.svg",
-                              width: 20,
-                            ),
-                            SizedBox(
-                              width: 5,
-                            ),
-                            Text("New York", style: customContent)
-                          ],
-                        ),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.all(5),
-                        child: Container(
-                          height: 35,
-                          decoration: BoxDecoration(
-                              color: white,
-                              borderRadius: BorderRadius.circular(30)),
-                          child: Padding(
-                            padding: const EdgeInsets.only(left: 15, right: 15),
-                            child: Row(
-                              children: [
-                                SvgPicture.asset(
-                                  "assets/images/time_icon.svg",
-                                  width: 20,
-                                ),
-                                SizedBox(
-                                  width: 8,
-                                ),
-                                Text(
-                                  "Now",
-                                  style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w500),
-                                ),
-                                SizedBox(
-                                  width: 2,
-                                ),
-                                Icon(Icons.keyboard_arrow_down)
-                              ],
-                            ),
-                          ),
-                        ),
-                      )
-                    ],
-                  ),
+                  // decoration: BoxDecoration(
+                  //     color: textFieldColor,
+                  //     borderRadius: BorderRadius.circular(30)),
+                  child: Flexible(
+                      child: Text("$key_UsersAddress",
+                          overflow: TextOverflow.fade, style: customContent)),
                 ),
                 Expanded(
                   child: Container(
@@ -172,7 +181,7 @@ class _HomePageState extends State<HomePage> {
         ),
         CustomSliderWidget(
           items: [
-            "assets/images/slide_1.jpg",
+            "assets/images/slide_3.jpg",
             "assets/images/slide_2.jpg",
             "assets/images/slide_3.jpg"
           ],
@@ -234,18 +243,26 @@ class _HomePageState extends State<HomePage> {
                   children: [
                     GestureDetector(
                       onTap: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (_) => StoreDetailPage(
-                                      img: firstMenu[0]['img'],
-                                    )));
+                        Fluttertoast.showToast(
+                            msg: "Coming soon!!!",
+                            toastLength: Toast.LENGTH_SHORT,
+                            gravity: ToastGravity.CENTER,
+                            timeInSecForIosWeb: 1,
+                            backgroundColor: Colors.red,
+                            textColor: Colors.white,
+                            fontSize: 16.0);
+                        // Navigator.push(
+                        //     context,
+                        //     MaterialPageRoute(
+                        //         builder: (_) => StoreDetailPage(
+                        //               img: firstMenu[0]['img'],
+                        //             )));
                       },
                       child: Container(
                         width: size.width,
                         height: 160,
                         child: Image(
-                          image: NetworkImage(firstMenu[0]['img']),
+                          image: AssetImage(firstMenu[0]['img']),
                           fit: BoxFit.cover,
                         ),
                       ),
@@ -398,18 +415,26 @@ class _HomePageState extends State<HomePage> {
                             children: [
                               GestureDetector(
                                 onTap: () {
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (_) => StoreDetailPage(
-                                              img: exploreMenu[index]['img'])));
+                                  Fluttertoast.showToast(
+                                      msg: "Coming soon!!!",
+                                      toastLength: Toast.LENGTH_SHORT,
+                                      gravity: ToastGravity.CENTER,
+                                      timeInSecForIosWeb: 1,
+                                      backgroundColor: Colors.red,
+                                      textColor: Colors.white,
+                                      fontSize: 16.0);
+                                  // Navigator.push(
+                                  //     context,
+                                  //     MaterialPageRoute(
+                                  //         builder: (_) => StoreDetailPage(
+                                  //             img: exploreMenu[index]['img'])));
                                 },
                                 child: Container(
                                   width: size.width - 30,
                                   height: 160,
                                   child: Image(
                                     image:
-                                        NetworkImage(exploreMenu[index]['img']),
+                                        AssetImage(exploreMenu[index]['img']),
                                     fit: BoxFit.cover,
                                   ),
                                 ),
@@ -589,18 +614,26 @@ class _HomePageState extends State<HomePage> {
                             children: [
                               GestureDetector(
                                 onTap: () {
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (_) => StoreDetailPage(
-                                              img: popluarNearYou[index]
-                                                  ['img'])));
+                                  Fluttertoast.showToast(
+                                      msg: "Coming soon!!!",
+                                      toastLength: Toast.LENGTH_SHORT,
+                                      gravity: ToastGravity.CENTER,
+                                      timeInSecForIosWeb: 1,
+                                      backgroundColor: Colors.red,
+                                      textColor: Colors.white,
+                                      fontSize: 16.0);
+                                  // Navigator.push(
+                                  //     context,
+                                  //     MaterialPageRoute(
+                                  //         builder: (_) => StoreDetailPage(
+                                  //             img: popluarNearYou[index]
+                                  //                 ['img'])));
                                 },
                                 child: Container(
                                   width: size.width - 30,
                                   height: 160,
                                   child: Image(
-                                    image: NetworkImage(
+                                    image: AssetImage(
                                         popluarNearYou[index]['img']),
                                     fit: BoxFit.cover,
                                   ),

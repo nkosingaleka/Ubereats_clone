@@ -24,28 +24,28 @@ class _RootAppState extends State<RootApp> {
       HomePage(),
       Center(
         child: Text(
-          "Search Page",
+          "Browse Page coming soon",
+          style: TextStyle(
+              fontSize: 20, fontWeight: FontWeight.bold, color: black),
+        ),
+      ),
+      // Center(
+      //   child: Text(
+      //     "Grocery Page",
+      //     style: TextStyle(
+      //         fontSize: 20, fontWeight: FontWeight.bold, color: black),
+      //   ),
+      // ),
+      Center(
+        child: Text(
+          "Orders Page coming soon",
           style: TextStyle(
               fontSize: 20, fontWeight: FontWeight.bold, color: black),
         ),
       ),
       Center(
         child: Text(
-          "Grocery Page",
-          style: TextStyle(
-              fontSize: 20, fontWeight: FontWeight.bold, color: black),
-        ),
-      ),
-      Center(
-        child: Text(
-          "Orders Page",
-          style: TextStyle(
-              fontSize: 20, fontWeight: FontWeight.bold, color: black),
-        ),
-      ),
-      Center(
-        child: Text(
-          "Account Page",
+          "Account Page coming soon",
           style: TextStyle(
               fontSize: 20, fontWeight: FontWeight.bold, color: black),
         ),
@@ -61,11 +61,12 @@ class _RootAppState extends State<RootApp> {
     List bottomItems = [
       "assets/images/home_icon.svg",
       "assets/images/search_icon.svg",
-      "assets/images/grocery_icon.svg",
+      // "assets/images/grocery_icon.svg",
       "assets/images/order_icon.svg",
       "assets/images/account_icon.svg"
     ];
-    List textItems = ["Home", "Search", "Grocery", "Orders", "Account"];
+    //"Grocery",
+    List textItems = ["Home", "Browse", "Orders", "Account"];
     return Container(
       width: double.infinity,
       height: 90,
@@ -74,8 +75,7 @@ class _RootAppState extends State<RootApp> {
           border: Border(
               top: BorderSide(width: 2, color: black.withOpacity(0.06)))),
       child: Padding(
-        padding:
-            const EdgeInsets.only(left: 20, right: 20, bottom: 20, top: 10),
+        padding: const EdgeInsets.only(left: 20, right: 20, bottom: 0, top: 10),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -98,6 +98,7 @@ class _RootAppState extends State<RootApp> {
                       textItems[index],
                       style: TextStyle(
                           fontSize: 10,
+                          fontWeight: FontWeight.bold,
                           color: pageIndex == index
                               ? black
                               : black.withOpacity(0.5)),
